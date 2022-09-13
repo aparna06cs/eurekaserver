@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: eureka-service
+    service: eureka-service
+  name: eureka-service
+  namespace: dev2
+spec:
+  ports:
+    - name: tcp-8082-8082-eureka-service
+      protocol: TCP
+      port: 8082
+      targetPort: 8082
+  selector:
+    app: eureka-service
+  type: ClusterIP
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka-service
+spec:
+  selector:
+    matchLabels:
+      app: eureka-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: eureka-service
+    spec:
+      containers:
+        - name: eureka-service
+          image: gcr.io/t-operative-348503/eureka-service:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8072
+          env:
+           - name: SPRING_PROFILES_ACTIVE
+             value: "dev2"
